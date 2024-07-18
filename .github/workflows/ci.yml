@@ -39,12 +39,13 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-#    - name: Set up Docker Buildx
-#      uses: docker/setup-buildx-action@v2
-#
-#    - name: Build And Push docker image
-#      run: docker build --platform linux/arm64/v8 --push --tag ${{ vars.DOCKER_DEV_TAG }} .
-#
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build And Push docker image
+      run: docker build --platform linux/arm64/v8 --push --tag ${{ secrets.DOCKER_DEV_TAG }} .
+      # m1기반 맥북은 arm64기반 이미지 생성 -> ubuntu20.04는 amd64 기반 프로세서 사용
+
 #    - name: run application use ssh
 #      uses: appleboy/ssh-action@master
 #      with:

@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  db:
+    image: mysql:8.0.33 #mysql 이미지를 hub에서 가져와 사용
+    container_name: ody-local-db #컨테이너 이름
+    restart: always #container를 항상 재시작
+    ports:
+      - "13306:3306" #3306포트 사용
+    environment:
+      MYSQL_ROOT_PASSWORD: root #비밀번호
+      MYSQL_DATABASE: ody #
+      MYSQL_USER: ody
+      MYSQL_PASSWORD: 1234
+      TZ: Asia/Seoul
+    command: [ "mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_general_ci" ]
+    #기본 캐릭터셋 설정
