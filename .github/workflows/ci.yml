@@ -70,14 +70,14 @@ jobs:
       - name: Pull Latest Docker Image
         run: |
             sudo docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.PASSWORD }}
-            if sudo docker inspect cicd-container &>/dev/null; then
-            sudo docker stop cicd-container
-            sudo docker rm -f cicd-container
+            if sudo docker inspect demo-app-container &>/dev/null; then
+            sudo docker stop demo-app-container
+            sudo docker rm -f demo-app-container
             sudo docker image prune -af
             fi
             sudo docker pull brocoli1021/demo-app:latest
 
       - name: Run Container
         run: |
-            sudo docker run --name cicd-container -p 8080:8080 brocoli1021/demo-app:latest 1>> build.log 2>> error.log &
+            sudo docker run --name demo-app-container -p 8080:8080 brocoli1021/demo-app:latest 1>> build.log 2>> error.log &
 
