@@ -32,13 +32,6 @@ jobs:
 
       - name: bootJar with gradle
         run: ./gradlew bootJar
-
-
-  deploy:
-    needs: build
-    runs-on: [ self-hosted, linux, ARM64 ]
-
-    steps:
       - name: Docker Login
         uses: docker/login-action@v3.1.0
         with:
@@ -50,34 +43,42 @@ jobs:
 
       - name: Build And Push docker image
         run: docker build --platform linux/arm64/v8 --push --tag ${{ secrets.DOCKER_DEV_TAG }} .
+
+
+  deploy:
+    needs: build
+    runs-on: [ self-hosted, linux, ARM64 ]
+
+    steps:
+
         # m1기반 맥북은 arm64기반 이미지 생성 -> ubuntu20.04는 amd64 기반 프로세서 사용
 
-#      - name: Pull docker
-#        run : docker pull ${{ secrets.DOCKER_USERNAME }}/my-ubuntu:latest
-#
-#      - name: kill 80 port if exist
-#        run: |
-#          if sudo lsof -i :80; then
-#          echo "Port 80 is already in use. Killing the process..."
-#          sudo lsof -i :80 | awk 'NR!=1 {print $2}' | sudo xargs kill -9
-#          fi
+      - name: Pull docker
+        run : docker pull ${{ secrets.DOCKER_USERNAME }}/my-ubuntu:latest
 
-#      - name: Run Docker
-#        run: |
-#          docker run -d --log-driver=syslog -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/my-ubuntu:latest
-      - name: run application use ssh
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.DEV_IP }} # 호스트
-          username: ${{ secrets.DEV_USERNAME }} # 유저명 -> ubuntu
-          key: ${{secrets.DEV_SSH_KEY}} # ssh private 키
-          script_stop: true
-          script: |
-            docker pull ${{ secrets.DOCKER_USERNAME }}/my-ubuntu:latest
-            if sudo lsof -i :80; then
-                      echo "Port 80 is already in use. Killing the process..."
-                      sudo lsof -i :80 | awk 'NR!=1 {print $2}' | sudo xargs kill -9
-                      fi
-            docker run -d --log-driver=syslog -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/my-ubuntu:latest
-            
-            
+      - name: kill 80 port if exist
+        run: |
+          if sudo lsof -i :80; then
+          echo "Port 80 is already in use. Killing the process..."
+          sudo lsof -i :80 | awk 'NR!=1 {print $2}' | sudo xargs kill -9
+          fi
+
+      - name: Run Docker
+        run: |
+          docker run -d --log-driver=syslog -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/my-ubuntu:latest
+#      - name: run application use ssh
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.DEV_IP }} # 호스트
+#          username: ${{ secrets.DEV_USERNAME }} # 유저명 -> ubuntu
+#          key: ${{secrets.DEV_SSH_KEY}} # ssh private 키
+#          script_stop: true
+#          script: |
+#            docker pull ${{ secrets.DOCKER_USERNAME }}/my-ubuntu:latest
+#            if sudo lsof -i :80; then
+#                      echo "Port 80 is already in use. Killing the process..."
+#                      sudo lsof -i :80 | awk 'NR!=1 {print $2}' | sudo xargs kill -9
+#                      fi
+#            docker run -d --log-driver=syslog -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/my-ubuntu:latest
+#
+#
