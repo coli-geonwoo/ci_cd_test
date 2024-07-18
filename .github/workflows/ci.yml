@@ -30,16 +30,33 @@ jobs:
       - name: assign grant gradlew
         run: chmod +x gradlew
 
+      - name: Test with Gradle
+        run: ./gradlew build
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: ${{ always() }}
+        with:
+          files: ./build/test-results/**/*.xml
+
+      - name: When test fail, comment on that code
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: ./build/test-results/**/*.xml
+          token: ${{ github.token }}
+
       - name: bootJar with gradle
         run: ./gradlew bootJar
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Docker Login
         uses: docker/login-action@v3.1.0
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
 
       - name: Build And Push docker image
         run: docker build --platform linux/arm64/v8 --push --tag ${{ secrets.DOCKER_DEV_TAG }} .
@@ -47,38 +64,20 @@ jobs:
 
   deploy:
     needs: build
-    runs-on: [ self-hosted, linux, ARM64 ]
+    runs-on: self-hosted
 
     steps:
-
-        # m1기반 맥북은 arm64기반 이미지 생성 -> ubuntu20.04는 amd64 기반 프로세서 사용
-
-      - name: Pull docker
-        run : docker pull ${{ secrets.DOCKER_USERNAME }}/my-ubuntu:latest
-
-      - name: kill 80 port if exist
+      - name: Pull Latest Docker Image
         run: |
-          if sudo lsof -i :80; then
-          echo "Port 80 is already in use. Killing the process..."
-          sudo lsof -i :80 | awk 'NR!=1 {print $2}' | sudo xargs kill -9
-          fi
+            sudo docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.PASSWORD }}
+            if sudo docker inspect cicd-container &>/dev/null; then
+            sudo docker stop cicd-container
+            sudo docker rm -f cicd-container
+            sudo docker image prune -af
+            fi
+            sudo docker pull brocoli1021/demo-app:latest
 
-      - name: Run Docker
+      - name: Run Container
         run: |
-          docker run -d --log-driver=syslog -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/my-ubuntu:latest
-#      - name: run application use ssh
-#        uses: appleboy/ssh-action@master
-#        with:
-#          host: ${{ secrets.DEV_IP }} # 호스트
-#          username: ${{ secrets.DEV_USERNAME }} # 유저명 -> ubuntu
-#          key: ${{secrets.DEV_SSH_KEY}} # ssh private 키
-#          script_stop: true
-#          script: |
-#            docker pull ${{ secrets.DOCKER_USERNAME }}/my-ubuntu:latest
-#            if sudo lsof -i :80; then
-#                      echo "Port 80 is already in use. Killing the process..."
-#                      sudo lsof -i :80 | awk 'NR!=1 {print $2}' | sudo xargs kill -9
-#                      fi
-#            docker run -d --log-driver=syslog -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/my-ubuntu:latest
-#
-#
+            sudo docker run --name cicd-container -p 8080:8080 brocoli1021/demo-app:latest 1>> build.log 2>> error.log &
+
