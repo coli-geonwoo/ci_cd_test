@@ -78,7 +78,7 @@ jobs:
           pwd
           echo "===================================="
           ls -al
-          docker run --platform linux/arm64 --name $DOCKER_CONTAINER_NAME -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/$DOCKERHUB_REPOSITORY:latest
+          docker run --platform linux/arm64 --name $DOCKER_CONTAINER_NAME -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/$DOCKERHUB_REPOSITORY:${{ github.sha }}
 
 ##      - name: Run new Docker container
 ##        run: |
