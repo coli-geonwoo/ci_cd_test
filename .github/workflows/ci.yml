@@ -66,6 +66,9 @@ jobs:
     steps:
       - name: Pull Docker image And Run
         run: |
+          sudo chmod 666 /var/run/docker.sock 
+          sudo chown root:docker /var/run/docker.sock
+          
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
           docker image prune -a -f
           docker pull --platform linux/arm64 ${{ secrets.DOCKER_USERNAME }}/$DOCKERHUB_REPOSITORY:${{ github.sha }}
