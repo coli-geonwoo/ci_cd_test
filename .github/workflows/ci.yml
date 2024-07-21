@@ -74,11 +74,7 @@ jobs:
           docker pull --platform linux/arm64 ${{ secrets.DOCKER_USERNAME }}/$DOCKERHUB_REPOSITORY:${{ github.sha }}
           docker stop $DOCKER_CONTAINER_NAME || true
           docker rm $DOCKER_CONTAINER_NAME || true
-          echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
-          pwd
-          echo "===================================="
-          ls -al
-          docker run --platform linux/arm64 --name $DOCKER_CONTAINER_NAME -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/$DOCKERHUB_REPOSITORY:${{ github.sha }}
+          docker run --platform linux/arm64 --name $DOCKER_CONTAINER_NAME -p 80:8080 ${{ secrets.DOCKER_USERNAME }}/$DOCKERHUB_REPOSITORY:${{ github.sha }} -d
 
 ##      - name: Run new Docker container
 ##        run: |
