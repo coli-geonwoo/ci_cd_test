@@ -24,6 +24,8 @@ jobs:
         with:
           repository:  ${{ github.repository }}
           ref: new-ci-workflow
+          submodules: true
+
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
