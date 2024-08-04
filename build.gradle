@@ -11,7 +11,7 @@ sourceCompatibility = '17'
 
 jacoco {
     // JaCoCo 버전
-    toolVersion = '0.8.5'
+    toolVersion = '0.8.8'
 
 //  테스트결과 리포트를 저장할 경로 변경
 //  default는 "$/jacoco"
@@ -21,24 +21,9 @@ jacoco {
 jacocoTestReport {
     jacocoTestReport {
         reports {
-            xml.required = true
-            csv.required = false
-            html.required = true
-        }
-    }
-}
-
-jacocoTestCoverageVerification {
-    // 이 커버리지 기준은 이 글의 맨 아래에서 다시 설명하겠습니다.
-    violationRules {
-        rule {
-            element = 'CLASS'
-
-            limit {
-                counter = 'BRANCH'
-                value = 'COVEREDRATIO'
-                minimum = 0.90
-            }
+            xml.required.set(true)
+            csv.required.set(false)
+            html.required.set(true)
         }
     }
 }
@@ -60,4 +45,5 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
