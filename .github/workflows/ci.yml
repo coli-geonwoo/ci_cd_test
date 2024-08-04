@@ -2,7 +2,7 @@ name: backend cicd dev
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "new-ci-workflow" ]
 
 
 env:
