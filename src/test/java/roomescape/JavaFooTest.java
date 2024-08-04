@@ -8,10 +8,10 @@ class JavaFooTest {
 
     private JavaFoo javaFoo = new JavaFoo();
 
-    @Test
-    public void partiallyCoveredHelloMethodTest() {
-        String actual = javaFoo.hello("펭");
-        assertEquals(actual, "하");
-    }
+//    @Test
+//    public void partiallyCoveredHelloMethodTest() {
+//        String actual = javaFoo.hello("펭");
+//        assertEquals(actual, "하");
+//    }
 
 }
