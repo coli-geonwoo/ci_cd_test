@@ -1,12 +1,48 @@
 plugins {
     id 'org.springframework.boot' version '3.2.4'
     id 'io.spring.dependency-management' version '1.1.4'
+    id 'jacoco'
     id 'java'
 }
 
 group = 'nextstep'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
+
+jacoco {
+    // JaCoCo 버전
+    toolVersion = '0.8.5'
+
+//  테스트결과 리포트를 저장할 경로 변경
+//  default는 "$/jacoco"
+//  reportsDir = file("$buildDir/customJacocoReportDir")
+}
+
+jacocoTestReport {
+    jacocoTestReport {
+        reports {
+            xml.required = false
+            csv.required = false
+            html.required = true
+        }
+    }
+}
+
+jacocoTestCoverageVerification {
+    // 이 커버리지 기준은 이 글의 맨 아래에서 다시 설명하겠습니다.
+    violationRules {
+        rule {
+            element = 'CLASS'
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.90
+            }
+        }
+    }
+}
+
 
 repositories {
     mavenCentral()
